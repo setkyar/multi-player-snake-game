@@ -106,6 +106,6 @@ function emitGameOver(roomName, winner) {
   io.sockets.in(roomName).emit("gameOver", JSON.stringify({ winner }));
 }
 
-const port = env.process.PORT || 5000
+const port = process.env.PORT || 5000;
 
 io.listen(port);
