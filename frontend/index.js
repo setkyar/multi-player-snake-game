@@ -2,7 +2,7 @@ const BG_COLOUR = "#231f20";
 const SNAKE_COLOR = "#c2c2c2";
 const FOOD_COLOR = "#e66916";
 
-const socket = io("http://localhost:3000");
+const socket = io("https://snake-socket.setkyar.com");
 
 socket.on("init", handleInit);
 socket.on("gameState", handleGameState);
@@ -17,6 +17,8 @@ const newGameBtn = document.getElementById("newGameButton");
 const joinGameBtn = document.getElementById("joinGameButton");
 const gameCodeInput = document.getElementById("gameCodeInput");
 const gameCodeDisplay = document.getElementById("gameCodeDisplay");
+const playerOneSnakeColor = document.getElementById("player1snakeColor");
+const playerTwoSnakeColor = document.getElementById("player1snakeColor");
 
 newGameBtn.addEventListener("click", newGame);
 joinGameBtn.addEventListener("click", joinGame);
@@ -58,9 +60,16 @@ function paintGame(state) {
 function paintPlayer(playerState, size, colour) {
   const snake = playerState.snake;
 
-  ctx.fillStyle = colour;
-  for (let cell of snake) {
-    ctx.fillRect(cell.x * size, cell.y * size, size, size);
+  for (let i = 0; i < snake.length; i++) {
+    if (i === snake.length - 1) {
+      // Paint the head with a different color
+      ctx.fillStyle = "green";
+      ctx.fillRect(snake[i].x * size, snake[i].y * size, size, size);
+    } else {
+      // Paint the body
+      ctx.fillStyle = colour;
+      ctx.fillRect(snake[i].x * size, snake[i].y * size, size, size);
+    }
   }
 }
 
@@ -71,6 +80,9 @@ function handleInit(number) {
 function newGame() {
   socket.emit("newGame");
   init();
+
+  playerOneSnakeColor.innerText =
+    "Your snake color is white ⚪️. Green is your snake's head.";
 }
 
 function handleGameState(gameState) {
@@ -101,6 +113,10 @@ function handleGameOver(data) {
 function joinGame() {
   const code = gameCodeInput.value;
   socket.emit("joinGame", code);
+
+  playerTwoSnakeColor.innerText =
+    "Your snake color is red 🔴. Green is your snake's head.";
+
   init();
 }
 

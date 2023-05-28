@@ -76,7 +76,11 @@ io.on("connection", (client) => {
     const vel = getUpdatedVelocity(keyCode);
 
     if (vel) {
-      state[roomName].players[client.number - 1].vel = vel;
+      if (state[roomName] && state[roomName].players[client.number - 1]) {
+        state[roomName].players[client.number - 1].vel = vel;
+      } else {
+        console.log("No room or player found for this id:", client.id);
+      }
     }
   }
 });
