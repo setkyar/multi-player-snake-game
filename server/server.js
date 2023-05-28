@@ -1,6 +1,8 @@
+require("dotenv").config();
+
 const io = require("socket.io")({
   cors: {
-    origin: "http://127.0.0.1:5500",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST"],
   },
 });
@@ -37,9 +39,9 @@ io.on("connection", (client) => {
 
     client.join(gameCode);
     client.number = 2;
-    client.emit('init', 2)
+    client.emit("init", 2);
 
-    startGameInterval(gameCode)
+    startGameInterval(gameCode);
   }
 
   function handleNewGame() {
@@ -54,13 +56,13 @@ io.on("connection", (client) => {
 
     // send out player number
     client.number = 1;
-    client.emit('init', 1)
+    client.emit("init", 1);
   }
 
   function handleKeydown(keyCode) {
     const roomName = clientRooms[client.id];
 
-    if(!roomName) {
+    if (!roomName) {
       return;
     }
 
@@ -89,7 +91,7 @@ function startGameInterval(roomName) {
       emitGameOver(roomName, winner);
 
       // reset
-      state[roomName] = null
+      state[roomName] = null;
       clearInterval(intervalId);
     }
   }, 1000 / FRAME_RATE);
@@ -97,13 +99,11 @@ function startGameInterval(roomName) {
 
 function emitGameState(roomName, state) {
   // emit to everyone in the room
-  io.sockets.in(roomName)
-    .emit('gameState', JSON.stringify(state))
+  io.sockets.in(roomName).emit("gameState", JSON.stringify(state));
 }
 
 function emitGameOver(roomName, winner) {
-  io.sockets.in(roomName)
-    .emit('gameOver', JSON.stringify({winner}))
+  io.sockets.in(roomName).emit("gameOver", JSON.stringify({ winner }));
 }
 
 io.listen(3000);
